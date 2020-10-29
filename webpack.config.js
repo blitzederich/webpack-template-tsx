@@ -27,6 +27,14 @@ const devConfig = {
 			{
 				test: /\.css$/,
 				use: ['style-loader', 'css-loader', 'postcss-loader']
+			},
+			{
+				test: /\.(jpeg|jpg|png|gif|woff|svg|otf)$/,
+				loader: 'file-loader',
+				options: {
+					outputPath: 'static/',
+					name: '[name].[ext]'
+				}
 			}
 		]
 	},
@@ -39,6 +47,9 @@ const devConfig = {
 		compress: true,
 		port: 8080,
 		open: true,
+	},
+	resolve: {
+		extensions: ['.js', '.ts', '.tsx']
 	}
 };
 
@@ -63,6 +74,14 @@ const prodConfig = {
 			{
 				test: /\.css$/,
 				use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+			},
+			{
+				test: /\.(jpeg|jpg|png|gif|woff|svg|otf)$/,
+				loader: 'file-loader',
+				options: {
+					outputPath: 'static/',
+					name: '[name].[ext]'
+				}
 			}
 		]
 	},
@@ -74,7 +93,10 @@ const prodConfig = {
 			filename: 'index.html',
 			template: './src/index.html'
 		})
-	]
+	],
+	resolve: {
+		extensions: ['.js', '.ts', '.tsx']
+	}
 };
 
 module.exports = isProduction 

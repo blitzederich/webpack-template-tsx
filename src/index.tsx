@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 interface HelloWorldInterface {
-    name: string
+    name?: string
 }
 
 function HelloWorld(props: HelloWorldInterface): JSX.Element {
