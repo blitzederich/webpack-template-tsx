@@ -1,104 +1,97 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 
+const merge = require('webpack-merge').merge;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const devConfig = {
-	mode: 'development',
+const config = {
 	entry: './src/webpack-template.js',
 	output: {
-		path: path.resolve('dist'),
-		filename: 'js/[name].js?[fullhash]'
+		path: path.resolve(__dirname, 'dist'),
+		filename: 'js/[name].js?[contenthash]'
 	},
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.jsx?$/,
 				loader: 'babel-loader'
 			},
 			{
 				test: /\.tsx?$/,
-				exclude: /node_modules/,
 				use: ['babel-loader', 'ts-loader']
 			},
+		]
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			filename: 'index.html',
+			template: './src/static/index.html'
+		}),
+		new CopyPlugin({
+			patterns: [
+				{from: 'src/static/assets', to: ''}
+			]
+		})
+	],
+	resolve: {
+		extensions: ['.js', '.jsx', '.ts', '.tsx']
+	}
+};
+
+const devConfig = {
+	mode: 'development',
+	module: {
+		rules: [
 			{
 				test: /\.css$/,
-				use: ['style-loader', 'css-loader', 'postcss-loader']
-			},
-			{
-				test: /\.(jpeg|jpg|png|gif|woff|svg|otf)$/,
-				loader: 'file-loader',
-				options: {
-					outputPath: 'static/',
-					name: '[name].[ext]'
-				}
+				use: [
+					'style-loader',
+					'css-loader',
+					'postcss-loader'
+				]
 			}
 		]
 	},
-	plugins: [new HtmlWebpackPlugin({
-		filename: 'index.html',
-		template: './src/index.html'
-	})],
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		compress: true,
 		port: 8080,
 		open: true,
 	},
-	resolve: {
-		extensions: ['.js', '.ts', '.tsx']
-	}
 };
 
 const prodConfig = {
 	mode: 'production',
-	entry: './src/webpack-template.js',
-	output: {
-		path: path.resolve('dist'),
-		filename: 'js/[name].js?[contenthash]'
-	},
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
-				loader: 'babel-loader'
-			},
-			{
-				test: /\.tsx?$/,
-				exclude: /node_modules/,
-				use: ['babel-loader', 'ts-loader']
-			},
-			{
 				test: /\.css$/,
-				use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
-			},
-			{
-				test: /\.(jpeg|jpg|png|gif|woff|svg|otf)$/,
-				loader: 'file-loader',
-				options: {
-					outputPath: 'static/',
-					name: '[name].[ext]'
-				}
+				use: [
+					MiniCssExtractPlugin.loader, 
+					'css-loader',
+					'postcss-loader'
+				]
 			}
 		]
 	},
 	plugins: [
 		new MiniCssExtractPlugin({
 			filename: 'css/[name].css?[contenthash]'
-		}),
-		new HtmlWebpackPlugin({
-			filename: 'index.html',
-			template: './src/index.html'
 		})
 	],
-	resolve: {
-		extensions: ['.js', '.ts', '.tsx']
+	optimization: {
+		minimize: true,
+		minimizer: [
+			new CssMinimizerPlugin()
+		]
 	}
 };
 
-module.exports = isProduction 
-	? prodConfig
-	: devConfig;
+module.exports = isProduction
+	? merge(config, prodConfig)
+	: merge(config, devConfig);
