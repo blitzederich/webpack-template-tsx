@@ -13,7 +13,7 @@ const config = {
 	entry: './src/webpack-template.js',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'js/[name].js?[contenthash]'
+		filename: 'js/[name].[contenthash].js'
 	},
 	module: {
 		rules: [
@@ -34,7 +34,13 @@ const config = {
 		}),
 		new CopyPlugin({
 			patterns: [
-				{from: 'src/static/assets', to: ''}
+				{
+					from: 'src/static', 
+					to: '',
+					globOptions: {
+						ignore: ['index.html']
+					}
+				}
 			]
 		})
 	],
@@ -81,7 +87,7 @@ const prodConfig = {
 	},
 	plugins: [
 		new MiniCssExtractPlugin({
-			filename: 'css/[name].css?[contenthash]'
+			filename: 'css/[name].[contenthash].css'
 		})
 	],
 	optimization: {
