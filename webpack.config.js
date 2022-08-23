@@ -1,29 +1,35 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-
 const merge = require('webpack-merge').merge;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
-	entry: './src/webpack-template.js',
+	mode: 'production',
+	entry: './src/index.tsx',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'js/[name].[contenthash].js'
+		filename: 'js/[name].[contenthash].js',
+		publicPath: '/',
 	},
 	module: {
 		rules: [
 			{
-				test: /\.jsx?$/,
-				loader: 'babel-loader'
-			},
-			{
 				test: /\.tsx?$/,
 				use: ['babel-loader', 'ts-loader']
+			},
+			{
+				test: /\.(woff|woff2|eot|ttf|otf)$/i,
+				type: 'asset/resource',
+				generator: {
+					filename: 'fonts/[name][ext][query]'
+				}
 			},
 		]
 	},
@@ -38,66 +44,18 @@ const config = {
 					from: 'src/static', 
 					to: '',
 					globOptions: {
-						ignore: ['index.html']
+						ignore: ['**/index.html']
 					}
 				}
 			]
 		})
 	],
 	resolve: {
-		extensions: ['.js', '.jsx', '.ts', '.tsx']
+		extensions: ['.js', '.jsx', '.ts', '.tsx'],
+		plugins: [new TsconfigPathsPlugin()]
 	}
-};
-
-const devConfig = {
-	mode: 'development',
-	module: {
-		rules: [
-			{
-				test: /\.css$/,
-				use: [
-					'style-loader',
-					'css-loader',
-					'postcss-loader'
-				]
-			}
-		]
-	},
-	devServer: {
-		contentBase: path.join(__dirname, 'dist'),
-		compress: true,
-		port: 8080,
-		open: true,
-	},
-};
-
-const prodConfig = {
-	mode: 'production',
-	module: {
-		rules: [
-			{
-				test: /\.css$/,
-				use: [
-					MiniCssExtractPlugin.loader, 
-					'css-loader',
-					'postcss-loader'
-				]
-			}
-		]
-	},
-	plugins: [
-		new MiniCssExtractPlugin({
-			filename: 'css/[name].[contenthash].css'
-		})
-	],
-	optimization: {
-		minimize: true,
-		minimizer: [
-			new CssMinimizerPlugin()
-		]
-	}
-};
+}
 
 module.exports = isProduction
-	? merge(config, prodConfig)
-	: merge(config, devConfig);
+	? merge(config, require('./webpack/production'))
+	: merge(config, require('./webpack/development'));

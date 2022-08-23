@@ -1,15 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+// Copyright 2022 Alexander Samorodov <blitzerich@gmail.com>
 
-interface HelloWorldInterface {
-    name?: string
-}
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { App } from './App';
+import { store } from './store';
 
-function HelloWorld(props: HelloWorldInterface): JSX.Element {
-	return <h1>Hello, {props.name ? props.name : 'World'}!</h1>;
-}
+import './style.css';
 
-ReactDOM.render(
-	<HelloWorld name="Alexander"/>,
-	document.getElementById('root')
+const container = document.getElementById('root')!;
+const root = createRoot(container);
+
+root.render(
+	<StrictMode>
+		<Provider store={store}>
+			<App/>
+		</Provider>
+	</StrictMode>,
 );

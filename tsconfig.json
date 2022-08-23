@@ -1,20 +1,19 @@
 {
     "compilerOptions": {
-      "jsx": "react",
-      "target": "esnext",
-      "lib": ["es6", "dom"],
-      "outDir": "dist",
+      "strict": true,
+      "target": "ES2015",
+      "module": "ES2015",
+      "moduleResolution": "Node",
       "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
+      "skipLibCheck": true,
+      "lib": ["DOM", "ES2015"],
+      "jsx": "react-jsx",
+      "sourceMap": true,
+      "removeComments": false,
       "noUnusedLocals": true,
       "noUnusedParameters": true,
-      "noImplicitThis": true,
-      "noImplicitReturns": true,
-      "noFallthroughCasesInSwitch": true,
-      "moduleResolution": "node",
-      "isolatedModules": true,
-      "noImplicitAny": true
+      "baseUrl": "./src",
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/declaration.d.ts"],
-    "exclude": ["node_modules"]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
   }
